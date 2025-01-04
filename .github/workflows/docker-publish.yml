@@ -62,7 +62,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/demo-app:latest .
+          docker build -t med3744lemin/demo-app:latest .
 
       - name: Push Docker image
         run: |
