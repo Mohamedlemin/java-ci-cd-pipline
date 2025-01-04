@@ -1,6 +1,9 @@
 version: '3.8'
 
 services:
+  #################################################
+  # 1) PostgreSQL Database
+  #################################################
   database:
     container_name: backend-database
     image: postgres:14.1
@@ -12,15 +15,16 @@ services:
     volumes:
       - ./volumes/postgres:/data/postgres
     ports:
-      - "5332:5432"
+      - "5332:5432"   # Host port 5332 -> Container port 5432
     networks:
       - database
     restart: unless-stopped
 
+  #################################################
+  # 2) Demo App (Pull from Docker Hub)
+  #################################################
   demo-app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: med3744lemin/demo-app:latest
     container_name: demo-app
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/demo_db
@@ -35,6 +39,9 @@ services:
       - database
       - monitoring
 
+  #################################################
+  # 3) Prometheus
+  #################################################
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -47,6 +54,9 @@ services:
     depends_on:
       - demo-app
 
+  #################################################
+  # 4) Grafana
+  #################################################
   grafana:
     image: grafana/grafana-oss:latest
     container_name: grafana
@@ -58,6 +68,9 @@ services:
       - prometheus
       - loki
 
+  #################################################
+  # 5) Zipkin
+  #################################################
   zipkin:
     image: openzipkin/zipkin:latest
     container_name: zipkin
@@ -66,6 +79,9 @@ services:
     networks:
       - monitoring
 
+  #################################################
+  # 6) Loki
+  #################################################
   loki:
     image: grafana/loki:2.8.0
     container_name: loki
@@ -77,6 +93,9 @@ services:
     networks:
       - monitoring
 
+  #################################################
+  # 7) Promtail
+  #################################################
   promtail:
     image: grafana/promtail:2.8.0
     container_name: promtail
@@ -89,12 +108,18 @@ services:
     depends_on:
       - loki
 
+#################################################
+# Networks
+#################################################
 networks:
   database:
     driver: bridge
   monitoring:
     driver: bridge
 
+#################################################
+# Volumes
+#################################################
 volumes:
   postgres:
   loki:
