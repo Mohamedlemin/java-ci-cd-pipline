@@ -1,34 +1,42 @@
-name: Build and Publish Docker
+name: Build and Test
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-  build_and_publish:
+  build:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:14.1
+        env:
+          POSTGRES_USER: ms-service
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: demo_db
+        ports:
+          - 5432:5432 # Expose PostgreSQL on the default port
+        options: >
+          --health-cmd="pg_isready -U ms-service -d demo_db"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
 
     steps:
       - name: Check out code
         uses: actions/checkout@v3
 
-      - name: Set up JDK
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: 17
           distribution: temurin
 
+      - name: Wait for PostgreSQL
+        run: sleep 30  # Wait for the database to initialize
+
       - name: Build with Maven
         run: mvn clean package --no-transfer-progress
-
-      - name: Docker login
-        run: |
-          echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-
-      - name: Build Docker image
-        run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/demo-app-mysql:latest .
-
-      - name: Push Docker image
-        run: |
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/demo-app-mysql:latest
