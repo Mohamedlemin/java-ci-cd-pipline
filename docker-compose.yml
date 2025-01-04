@@ -1,0 +1,99 @@
+version: '3.8'
+
+services:
+  database:
+    container_name: backend-database
+    image: postgres:14.1
+    environment:
+      POSTGRES_USER: ms-service
+      POSTGRES_PASSWORD: password
+      PGDATA: /data/postgres
+    volumes:
+      - ./volumes/postgres:/data/postgres
+    ports:
+      - "5332:5432"
+    networks:
+      - database
+    restart: unless-stopped
+
+  demo-app:
+    build:
+      context: .
+      dockerfile: src/main/Dockerfile
+    container_name: demo-app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/demo_db
+      SPRING_DATASOURCE_USERNAME: ms-service
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database
+    networks:
+      - database
+      - monitoring
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./src/main/resources/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring
+    depends_on:
+      - demo-app
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - monitoring
+    depends_on:
+      - prometheus
+      - loki
+
+  zipkin:
+    image: openzipkin/zipkin:latest
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - monitoring
+
+  loki:
+    image: grafana/loki:2.8.0
+    container_name: loki
+    volumes:
+      - ./src/main/resources/loki-config.yml:/etc/loki/config.yml:ro
+      - ./volumes/loki:/data/loki
+    ports:
+      - "3100:3100"
+    networks:
+      - monitoring
+
+  promtail:
+    image: grafana/promtail:2.8.0
+    container_name: promtail
+    volumes:
+      - ./src/main/resources/promtail-config.yml:/etc/promtail/config.yml:ro
+      - ./logs:/var/log
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - monitoring
+    depends_on:
+      - loki
+
+networks:
+  database:
+    driver: bridge
+  monitoring:
+    driver: bridge
+
+volumes:
+  postgres:
+  loki:
