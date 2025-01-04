@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Invoice</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #4B0082; /* Dark purple */
+            color: white;
+        }
+        .total {
+            font-weight: bold;
+            background-color: #D3D3D3; /* Light gray */
+        }
+    </style>
+</head>
+<body>
+
+<h2>Invoice</h2>
+
+<table>
+    <thead>
+    <tr>
+        <th>Designation</th>
+        <th>QTY</th>
+        <th>Prix - U</th>
+        <th>Prix Total</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="item : ${items}">
+        <td th:text="${item.designation}"></td>
+        <td th:text="${item.quantity}"></td>
+        <td th:text="${item.unitPrice}"></td>
+        <td th:text="${item.totalPrice}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<div>
+    <p class="total">TOTAL HT: <span th:text="${totalHT}"></span></p>
+    <p class="total">TVA 16%: <span th:text="${tva}"></span></p>
+    <p class="total">TOTAL TTC: <span th:text="${totalTTC}"></span></p>
+</div>
+
+</body>
+</html>

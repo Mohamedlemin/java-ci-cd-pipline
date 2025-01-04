@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Expense List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .title {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .pagination {
+            text-align: center;
+        }
+        .pagination span {
+            margin: 0 5px;
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            color: #333;
+        }
+        .pagination span.active {
+            background-color: #4CAF50;
+            color: white;
+            border: 1px solid #4CAF50;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="title" th:text="${title}"></div>
+    <h4 th:text="${date}"></h4>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Company</th>
+            <th>Project</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="expense : ${expenses.getContent()}">
+            <td th:text="${expense.getName()}"></td>
+            <td th:text="${expense.getDescription()}"></td>
+            <td th:text="${expense.getAmount()}"></td>
+            <td th:text="${expense.getDate()}"></td>
+            <td th:text="${expense.getCompany().getName()}"></td>
+            <td th:text="${expense.getProject().getName()}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="pagination">
+<!--        <span th:text="${currentPage} + '/' + ${totalPages}"></span>-->
+    </div>
+</div>
+</body>
+</html>

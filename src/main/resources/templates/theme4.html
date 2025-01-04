@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Business Quote</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    table {
+      width: 100%;
+      max-width: 1000px;
+      border-collapse: collapse;
+      margin: 0 auto;
+    }
+
+    thead tr {
+      background-color: #C41E3A;
+      color: white;
+    }
+
+    th {
+      padding: 15px 20px;
+      text-align: left;
+    }
+
+    td {
+      padding: 20px;
+      color: #444;
+    }
+
+    th:nth-child(2),
+    th:nth-child(3),
+    th:nth-child(4),
+    td:nth-child(2),
+    td:nth-child(3),
+    td:nth-child(4) {
+      text-align: right;
+    }
+
+    tbody tr:nth-child(even) {
+      border: 1px solid #ddd;
+    }
+
+    tbody tr:nth-child(odd) td {
+      padding-bottom: 0;
+    }
+
+    tfoot {
+      text-align: right;
+    }
+
+    tfoot tr td {
+      padding: 10px 20px;
+    }
+
+    tfoot tr:last-child td:nth-child(3) {
+      color: white;
+      font-weight: bold;
+    }
+    tfoot tr:last-child td:nth-child(4) {
+      color: white;
+      font-weight: bold;
+    }
+
+    tfoot td:first-child {
+      text-align: right;
+      font-weight: bold;
+    }
+
+    .background-watermark {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: 1;
+    }
+    .container {
+      position: relative;
+      z-index: 1;
+      padding: 100px 70px;
+    }
+    @media print {
+      body {-webkit-print-color-adjust: exact;}
+    }
+  </style>
+</head>
+<body class="bg-gray-100 p-6" th:style="|font-family: ${pdfDTO.company().constantFont()}; font-size: ${pdfDTO.company().constantFontSize()};|">
+<div class="background-watermark" th:if="${!pdfDTO.hideWatermark() && !hasWatermark}" th:style="|background-image: url('${pdfDTO.company().backgroundUrl()}');|"></div>
+
+<div class="container">
+  <div class="quote-details mb-8 text-right">
+    <div th:switch="${pdfType}">
+      <p class="text-gray-800 mb-2" th:case="${pdfType.INVOICE}">Facture N° :<strong> <span th:text="${pdfDTO.documentNumber()}"></span></strong></p>
+      <p class="text-gray-800 mb-2" th:case="${pdfType.QUOTE}">Devis N° :<strong> <span th:text="${pdfDTO.documentNumber()}"></span></strong></p>
+      <p class="text-gray-800 mb-2" th:case="${pdfType.BL}">BL N° :<strong> <span th:text="${pdfDTO.documentNumber()}"></span></strong></p>
+    </div>
+    <p class="text-gray-800 mb-2"><span th:text="${pdfDTO.city()}"></span> Le :<strong> <span th:text="${pdfDTO.date()}"></span></strong></p>
+  </div>
+</div>
+
+<!-- Client Details -->
+<div class="flex items-center mb-8 justify-center">
+  <strong> Client : </strong><span th:text="${folder.client.name}"></span>
+</div>
+<div th:if="${pdfDTO.subject != ''}" class="flex items-center mb-8 justify-center" style="font-size: 15px;">
+  <span th:text="${pdfDTO.subject}">Objet</span>
+</div>
+
+<table>
+  <thead>
+  <tr >
+    <th th:each="column : ${pdfDTO.rows[0].columns}" th:style="'background-color: ' + ${pdfDTO.company().constantColor()}" th:text="${column.value}">Désignation</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="row : ${pdfDTO.rows.subList(1, pdfDTO.rows.size())}" >
+    <td th:each="column : ${row.columns}"
+        th:text="${column.value}">Value</td>
+  </tr>
+  </tbody>
+
+  <tfoot th:if="${pdfType == pdfType.QUOTE || pdfType == pdfType.INVOICE}">
+  <tr th:if="${pdfDTO.hideTaxes}" >
+    <td></td>
+    <td></td>
+
+    <td  >Total Exclu TVA</td>
+    <td  th:text="${total}"></td>
+  </tr>
+  <tr th:if="!${pdfDTO.hideTaxes}" >
+    <td></td>
+    <td></td>
+
+    <td >Sous total</td>
+    <td  th:text="${subTotal}"></td>
+  </tr>
+  <tr th:if="!${pdfDTO.hideTaxes}" >
+
+    <td></td>
+    <td></td>
+    <td >TVA</td>
+    <td  th:text="${taxesAmount}"></td>
+  </tr>
+  <tr  >
+
+    <td></td>
+    <td></td>
+    <td th:style="'background-color: ' + ${pdfDTO.company().variableColor()}" >Total TTC</td>
+    <td th:style="'background-color: ' + ${pdfDTO.company().variableColor()}"  th:text="${total}"></td>
+  </tr>
+  </tfoot>
+</table>
+
+<br>
+
+<div class="flex justify-center">
+  <div class="text-center">
+    <strong class="font-semibold" th:if="${pdfType == pdfType.INVOICE}">
+      Arrêté le présent Facture à la somme de :
+      <span th:text="${pdfDTO.totalString}">test</span>
+      <span th:text="${pdfDTO.currency}"></span>
+    </strong>
+    <strong class="font-semibold" th:if="${pdfType == pdfType.QUOTE}">
+      Arrêté le présent devis à la somme de :
+      <span th:text="${pdfDTO.totalString}">test</span>
+      <span th:text="${pdfDTO.currency}"></span>
+    </strong>
+  </div>
+</div>
+
+<!-- Signature and Stamp -->
+<div th:if="!${pdfDTO.hideSignature()}">
+  <div th:switch="${pdfDTO.signatureAndStampPosition()}">
+    <div th:case="'left'" class="footer mt-6 flex flex-col items-start">
+      <div th:if="!${pdfDTO.hideSignature()}">
+        <div th:if="${pdfDTO.signatory()!=null}">
+          <p class="font-semibold text-gray-800" th:text="${pdfDTO.signatory().getPosition()}"></p>
+          <img th:src="${pdfDTO.signatory().getSignatureUrl()}" alt="Digital Signature" class="h-20 mt-2">
+        </div>
+      </div>
+    </div>
+    <div th:case="'right'" class="footer mt-6 flex flex-col items-end">
+      <div th:if="!${pdfDTO.hideSignature()}">
+        <div th:if="${pdfDTO.signatory()!=null}">
+          <p class="font-semibold text-gray-800" th:text="${pdfDTO.signatory().getPosition()}"></p>
+          <img th:src="${pdfDTO.signatory().getSignatureUrl()}" alt="Digital Signature" class="h-20 mt-2">
+        </div>
+      </div>
+    </div>
+    <div th:case="*">
+      <div class="footer mt-6 flex flex-col items-center">
+        <div th:if="!${pdfDTO.hideSignature()}">
+          <div th:if="${pdfDTO.signatory()!=null}">
+            <p class="font-semibold text-gray-800" th:text="${pdfDTO.signatory().getPosition()}"></p>
+            <img th:src="${pdfDTO.signatory().getSignatureUrl()}" alt="Digital Signature" class="h-20 mt-2">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

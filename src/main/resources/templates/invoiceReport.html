@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoices Report</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 9px;
+      background-color: white; /* Ensure the body background is white */
+    }
+    .header {
+      background-color: #f3f4f6;
+      padding: 10px;
+      text-align: center;
+    }
+    .section-title {
+      background-color: #fbbf24;
+      padding: 8px; /* Adjusted padding for better fit */
+      font-weight: bold;
+      text-align: center;
+      border-radius: 5px 5px 0 0; /* Rounded corners on top */
+      margin: 0; /* Remove margin to fit in the card */
+    }
+    .summary-title {
+      background-color: #fbbf24; /* Same color as section title */
+      padding: 5px;
+      font-weight: bold;
+      text-align: center;
+    }
+    .card {
+      background-color: #f0f0f0;
+      border-radius: 5%;
+      padding: 0; /* Remove padding to fit title */
+      margin-bottom: 10px;
+      height: auto;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .logo-container {
+      display: flex; /* Use flexbox for centering the image */
+      justify-content: center; /* Center the image horizontally */
+      padding: 10px; /* Add padding around the image */
+    }
+    .summary-table, .details-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 25px; /* Space between the table and the previous content */
+      text-align: center;
+    }
+    .summary-table {
+      margin-top: 30px; /* Additional margin for the summary table */
+    }
+    .summary-table td, .details-table th, .details-table td {
+      padding: 8px;
+      text-align: center;
+    }
+    .summary-table tr {
+      margin-bottom: 16px; /* Space between rows */
+    }
+    .summary-table td:nth-child(odd) {
+      background-color: #fbbf24; /* Light gray for odd cells */
+    }
+    .summary-table td:nth-child(even) {
+      background-color: #f0f0f0; /* Darker gray for even cells */
+    }
+    .details-table th {
+      background-color: #fbbf24;
+    }
+    .details-table tr:nth-child(odd) {
+      background-color: #f0f0f0; /* Light gray for odd rows */
+    }
+    .details-table tr:nth-child(even) {
+      background-color: #ffffff; /* White for even rows */
+    }
+    p {
+      padding: 4px;
+      margin: 4px;
+      text-align: center;
+    }
+    .logo {
+      max-width: 100%; /* Ensure the image fits within the card */
+      height: 120px;
+      width: 120px;
+      max-height: 100%; /* Set a fixed height for the image */
+      object-fit: cover; /* Maintain aspect ratio */
+    }
+  </style>
+</head>
+<body class="bg-white"> <!-- Set the body background to white -->
+
+<div class="header">
+  <h1 class="text-2xl font-bold">INVOICES REPORT</h1>
+</div>
+
+<div class="container mx-auto mt-6">
+
+  <div class="grid grid-cols-2 gap-4 max-h-64">
+    <div class="grid grid-cols-2 gap-2 max-h-64">
+      <div class="card">
+        <div class="section-title">COMPANY LOGO</div>
+        <div class="logo-container">
+          <img th:src="${invoiceReportDTO.company().logo()}" alt="Company Logo" class="logo">
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-2 max-h-64">
+        <div class="card">
+          <div class="section-title">COMPANY NAME</div>
+          <p th:text="${invoiceReportDTO.company().name()}">Company Name</p>
+        </div>
+        <div class="card">
+          <div class="section-title">ADDRESS</div>
+          <p th:text="${invoiceReportDTO.company().address()}">Company Address</p>
+        </div>
+        <div class="card">
+          <div class="section-title">BANK ACCOUNT</div>
+          <p th:text="${invoiceReportDTO.company().bankAccountNumber()}">Bank Account</p>
+        </div>
+        <div class="card">
+          <div class="section-title">NIF</div>
+          <p th:text="${invoiceReportDTO.company().NIF()}">NIF</p>
+        </div>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-2 max-h-64">
+      <div class="card">
+        <div class="section-title">CLIENT LOGO</div>
+        <div class="logo-container">
+          <img th:src="${invoiceReportDTO.client().logoUrl()}" alt="Client Logo" class="logo">
+        </div>
+      </div>
+      <div class="grid grid-cols-1 gap-4">
+        <div class="card">
+          <div class="section-title">CLIENT NAME</div>
+          <p th:text="${invoiceReportDTO.client().name()}">Client Name</p>
+        </div>
+        <div class="card">
+          <div class="section-title">ADDRESS</div>
+          <p th:text="${invoiceReportDTO.client().address()}">Client Address</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title mt-6">SUMMARY</div>
+  <table class="summary-table">
+    <tbody>
+    <tr>
+      <td class="summary-title">Period:</td>
+      <td th:text="${startDate} + ' - ' + ${endDate}">Report Period</td>
+      <td class="summary-title">Invoice Number:</td>
+      <td th:text="${invoiceReportDTO.invoiceCounts()}">Invoices Count</td>
+      <td class="summary-title">Paid Counts:</td>
+      <td th:text="${invoiceReportDTO.paidInvoicesCount()}">Paid Count</td>
+      <td class="summary-title">Unpaid Counts:</td>
+      <td th:text="${invoiceReportDTO.unpaidCounts()}">Unpaid Count</td>
+    </tr>
+    <tr>
+      <td class="summary-title">Report Date:</td>
+      <td th:text="${invoiceReportDTO.reportDate()}">Report Date</td>
+      <td class="summary-title">Total HT:</td>
+      <td th:text="${invoiceReportDTO.totalHT()}">Total HT</td>
+      <td class="summary-title">Total Paid HT:</td>
+      <td th:text="${invoiceReportDTO.totalPaidHT()}">Total Paid HT</td>
+      <td class="summary-title">Total Unpaid HT:</td>
+      <td th:text="${invoiceReportDTO.totalUnpaidHT()}">Total Unpaid HT</td>
+    </tr>
+    <tr>
+      <td class="summary-title">Paid %:</td>
+      <td th:text="${invoiceReportDTO.paidPercentage()}">Paid %</td>
+      <td class="summary-title">Total TTC:</td>
+      <td th:text="${invoiceReportDTO.totalTTC()}">Total TTC</td>
+      <td class="summary-title">Total Paid TTC:</td>
+      <td th:text="${invoiceReportDTO.totalPaidTTC()}">Total Paid TTC</td>
+      <td class="summary-title">Total Unpaid TTC:</td>
+      <td th:text="${invoiceReportDTO.totalUnpaidTTC()}">Total Unpaid TTC</td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div class="section-title mt-6">DETAILS</div>
+  <table class="details-table">
+    <thead>
+    <tr>
+      <th>INVOICE FIRST LINE</th>
+      <th>INVOICE ID</th>
+      <th>DATE</th>
+      <th>TOTAL HT</th>
+      <th>TOTAL TTC</th>
+      <th>TVA</th>
+      <th>INVOICE STATUS</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="invoice : ${invoiceReportDTO.invoices()}">
+      <td th:text="${invoice.invoiceRows().get(0).columns().get(1).value()}">Invoice Description</td>
+      <td th:text="${invoice.invoiceNumber()}">Invoice Number</td>
+      <td th:text="${invoice.date()}">Invoice Date</td>
+      <td th:text="${invoice.total()}">Total TTC</td>
+      <td th:text="${invoice.subTotal()}">Total HT</td>
+      <td th:text="${invoice.taxesAmount()}">TVA</td>
+      <td th:class="${invoice.status() == 'UNPAID' ? 'status-unpaid' : 'status-fully-paid'}">
+        <span th:text="${invoice.status()}">Invoice Status</span>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>
