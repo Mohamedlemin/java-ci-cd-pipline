@@ -6,7 +6,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5332/demoDB
+    url: jdbc:postgresql://localhost:5332/demodb
     username: ms-service
     password: password
     name: cicd
