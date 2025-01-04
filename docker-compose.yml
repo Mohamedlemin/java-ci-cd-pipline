@@ -7,6 +7,7 @@ services:
     environment:
       POSTGRES_USER: ms-service
       POSTGRES_PASSWORD: password
+      POSTGRES_DB: demo_db
       PGDATA: /data/postgres
     volumes:
       - ./volumes/postgres:/data/postgres
@@ -19,7 +20,7 @@ services:
   demo-app:
     build:
       context: .
-      dockerfile: src/main/Dockerfile
+      dockerfile: Dockerfile
     container_name: demo-app
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/demo_db
