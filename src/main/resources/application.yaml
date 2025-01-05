@@ -27,7 +27,7 @@ management:
       exposure:
         include: health,prometheus,info,metrics,loggers,httptrace
       security:
-        enabled: false           # Disable security for endpoints
+        enabled: false
   health:
     show-details: always
   tracing:
@@ -36,9 +36,14 @@ management:
     metrics:
       export:
         enabled: true
-  security:
-    enabled: false
-
+  server:
+    port: 8080
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+      content-type: application/openmetrics-text # Add this line to ensure correct content type
 logging:
   level:
     root: INFO
