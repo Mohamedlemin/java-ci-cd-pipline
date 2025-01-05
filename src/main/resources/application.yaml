@@ -21,7 +21,7 @@ spring:
     basic:
       enabled: false
   zipkin:
-    base-url: http://zipkin:941
+    base-url: http://zipkin:9411
     enabled: true
   sleuth:
     sampler:
