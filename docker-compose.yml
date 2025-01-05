@@ -122,6 +122,7 @@ services:
     environment:
       WATCHTOWER_CLEANUP: "true"  # Automatically remove old images
       WATCHTOWER_LABEL_ENABLE: "true"  # Only update containers with the Watchtower label
+      WATCHTOWER_POLL_INTERVAL: 120  # 2 min
     networks:
       - monitoring  # Optional network; Watchtower needs access to Docker
     restart: unless-stopped
