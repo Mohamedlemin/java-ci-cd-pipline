@@ -5,7 +5,6 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://database:5432/demo_db  # Ensure this matches your Docker Compose configuration
     username: ms-service
     password: password
   jpa:
@@ -24,14 +23,14 @@ management:
     web:
       exposure:
         include: health, prometheus, info, metrics, loggers, httptrace
+  metrics:
+    export:
+      prometheus:
+        enabled: true  # Enable Prometheus metrics
   health:
     show-details: always
   tracing:
     enabled: true
-  prometheus:
-    metrics:
-      export:
-        enabled: true
 
 logging:
   level:
