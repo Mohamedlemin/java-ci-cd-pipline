@@ -18,8 +18,9 @@ public class UserController {
 
 	@GetMapping("/hello")
 	public String sayHello() {
-		return "Hello from the Demo App!";
+		return "<H1>Hello from the Demo App!</H1>";
 	}
+
 
 	@GetMapping
 	public List<Job> getUsers() {
