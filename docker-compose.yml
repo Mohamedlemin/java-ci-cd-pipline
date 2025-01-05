@@ -26,6 +26,7 @@ services:
   demo-app:
     image: med3744lemin/demo-app:latest
     container_name: demo-app
+    hostname: demo-app
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/demo_db
       SPRING_DATASOURCE_USERNAME: ms-service
@@ -38,6 +39,8 @@ services:
     networks:
       - database
       - monitoring
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"  # Enables Watchtower monitoring for this container
 
   #################################################
   # 3) Prometheus
@@ -107,6 +110,22 @@ services:
       - monitoring
     depends_on:
       - loki
+
+  #################################################
+  # 8) Watchtower
+  #################################################
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      WATCHTOWER_CLEANUP: "true"  # Automatically remove old images
+      WATCHTOWER_LABEL_ENABLE: "true"  # Only update containers with the Watchtower label
+    networks:
+      - monitoring  # Optional network; Watchtower needs access to Docker
+    restart: unless-stopped
+
 
 #################################################
 # Networks

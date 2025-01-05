@@ -17,12 +17,17 @@ spring:
     type: caffeine
     caffeine:
       spec: expireAfterWrite=30m
+  security:
+    basic:
+      enabled: false
 
 management:
   endpoints:
     web:
       exposure:
         include: health,prometheus,info,metrics,loggers,httptrace
+      security:
+        enabled: false           # Disable security for endpoints
   health:
     show-details: always
   tracing:
@@ -31,6 +36,8 @@ management:
     metrics:
       export:
         enabled: true
+  security:
+    enabled: false
 
 logging:
   level:
