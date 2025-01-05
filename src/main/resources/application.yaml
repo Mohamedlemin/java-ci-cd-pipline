@@ -20,6 +20,12 @@ spring:
   security:
     basic:
       enabled: false
+  zipkin:
+    base-url: http://zipkin:941
+    enabled: true
+  sleuth:
+    sampler:
+      probability: 1
 
 management:
   endpoints:
@@ -50,9 +56,7 @@ sleuth:
   sampler:
     probability: 1.0  # Trace 100% of requests (reduce in production for better performance)
 
-zipkin:
-  base-url: http://zipkin:9411  # Matches the Zipkin service in Docker Compose
-  enabled: true
+
 
 micrometer:
   metrics:
