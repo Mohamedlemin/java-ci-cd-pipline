@@ -1,9 +1,11 @@
 server:
   port: 8080
+  error:
+    include-stacktrace: never
 
 spring:
   datasource:
-    # url: jdbc:postgresql://localhost:5332/demodb  # <- Comment out or remove
+    url: jdbc:postgresql://database:5432/demo_db  # Ensure this matches your Docker Compose configuration
     username: ms-service
     password: password
   jpa:
@@ -17,6 +19,43 @@ spring:
     caffeine:
       spec: expireAfterWrite=30m
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus, info, metrics, loggers, httptrace
+  metrics:
+    export:
+      prometheus:
+        enabled: true  # Enable Prometheus metrics
+  health:
+    show-details: always
+  tracing:
+    enabled: true
+
+logging:
+  level:
+    root: INFO
+    io.micrometer: DEBUG  # To monitor Micrometer-related logs
+
+sleuth:
+  sampler:
+    probability: 1.0  # Trace 100% of requests (reduce in production for better performance)
+zipkin:
+  base-url: http://zipkin:9411  # Ensure this matches the Zipkin service in Docker Compose
+  enabled: true
+
+micrometer:
+  metrics:
+    export:
+      prometheus:
+        enabled: true  # Ensure Prometheus metrics are exposed
+
+logging.file:
+  name: ./logs/app.log  # Specify log file location
+
+loki:
+  enabled: true  # Optional Loki configuration if needed
 
 backup:
   path: ./backups
@@ -25,17 +64,10 @@ docker:
   container:
     name: postgres-db
 
-
-
-
 application:
   security:
     jwt:
       secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
       expiration: 86400000
       refresh-token:
-        expiration: 604800000
-
-
-
-
+        expiration: 604800000  # 7 days
