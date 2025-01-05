@@ -32,18 +32,15 @@ management:
     show-details: always
   tracing:
     enabled: true
-  prometheus:
-    metrics:
-      export:
-        enabled: true
-  server:
-    port: 8080
+    sampling:
+      probability: 1
   endpoint:
     metrics:
       enabled: true
     prometheus:
       enabled: true
-      content-type: application/openmetrics-text # Add this line to ensure correct content type
+      content-type: application/openmetrics-text  # Ensures correct content type
+
 logging:
   level:
     root: INFO
@@ -52,15 +49,16 @@ logging:
 sleuth:
   sampler:
     probability: 1.0  # Trace 100% of requests (reduce in production for better performance)
+
 zipkin:
-  base-url: http://zipkin:9411  # Ensure this matches the Zipkin service in Docker Compose
+  base-url: http://zipkin:9411  # Matches the Zipkin service in Docker Compose
   enabled: true
 
 micrometer:
   metrics:
     export:
       prometheus:
-        enabled: true  # Ensure Prometheus metrics are exposed
+        enabled: true  # Ensures Prometheus metrics are exposed
 
 logging.file:
   name: ./logs/app.log  # Specify log file location
