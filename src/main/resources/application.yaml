@@ -17,58 +17,49 @@ spring:
     type: caffeine
     caffeine:
       spec: expireAfterWrite=30m
-  security:
-    basic:
-      enabled: false
-  zipkin:
-    base-url: http://zipkin:9411
-    enabled: true
-  sleuth:
-    sampler:
-      probability: 1
 
 management:
   endpoints:
     web:
       exposure:
         include: health,prometheus,info,metrics,loggers,httptrace
-      security:
-        enabled: false
-  health:
-    show-details: always
-  tracing:
-    enabled: true
-    sampling:
-      probability: 1
+      base-path: /actuator
   endpoint:
     metrics:
       enabled: true
     prometheus:
       enabled: true
-      content-type: application/openmetrics-text  # Ensures correct content type
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: demo-app
+    export:
+      prometheus:
+        enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+    enabled: true
+  zipkin:
+    tracing:
+      endpoint: http://zipkin:9411/api/v2/spans
 
 logging:
   level:
     root: INFO
-    io.micrometer: DEBUG  # To monitor Micrometer-related logs
-
-sleuth:
-  sampler:
-    probability: 1.0  # Trace 100% of requests (reduce in production for better performance)
-
-
+    io.micrometer: DEBUG
+  file:
+    name: ./logs/app.log
 
 micrometer:
-  metrics:
-    export:
-      prometheus:
-        enabled: true  # Ensures Prometheus metrics are exposed
-
-logging.file:
-  name: ./logs/app.log  # Specify log file location
+  observation:
+    enabled: true
+  tracing:
+    enabled: true
 
 loki:
-  enabled: true  # Optional Loki configuration if needed
+  enabled: true
 
 backup:
   path: ./backups
@@ -83,4 +74,4 @@ application:
       secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
       expiration: 86400000
       refresh-token:
-        expiration: 604800000  # 7 days
+        expiration: 604800000
