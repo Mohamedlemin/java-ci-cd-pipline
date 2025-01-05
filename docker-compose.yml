@@ -63,6 +63,8 @@ services:
   grafana:
     image: grafana/grafana-oss:latest
     container_name: grafana
+    volumes:
+      - ./volumes/grafana:/var/lib/grafana
     ports:
       - "3000:3000"
     networks:
@@ -70,6 +72,7 @@ services:
     depends_on:
       - prometheus
       - loki
+    restart: unless-stopped
 
   #################################################
   # 5) Zipkin
@@ -128,6 +131,23 @@ services:
     restart: unless-stopped
 
 
+    #################################################
+    # 9) Portainer
+    #################################################
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    ports:
+        - "9000:9000"   # Portainer web UI available on host port 9000
+    networks:
+      - monitoring  # Optional network; Portainer needs access to Docker
+    restart: unless-stopped
+
+
+
 #################################################
 # Networks
 #################################################
@@ -143,3 +163,4 @@ networks:
 volumes:
   postgres:
   loki:
+  portainer_data:
