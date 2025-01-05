@@ -22,15 +22,15 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, prometheus, info, metrics, loggers, httptrace
-  metrics:
-    export:
-      prometheus:
-        enabled: true  # Enable Prometheus metrics
+        include: health,prometheus,info,metrics,loggers,httptrace
   health:
     show-details: always
   tracing:
     enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
 
 logging:
   level:
